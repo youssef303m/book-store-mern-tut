@@ -42,6 +42,40 @@ app.get("/books/:bookId", async (req, res) => {
   }
 });
 
+// Update a book
+app.patch("/books/:bookId", async (req, res) => {
+  try {
+    const { title, author, publishYear } = req.body;
+    const { bookId } = req.params;
+
+    // If all required fields are not sent
+    if (!title && !author && !publishYear) {
+      return res.status(400).send({
+        status: httpStatus.FAIL,
+        message: "No field was sent to update",
+      });
+    }
+
+    const book = await Book.findByIdAndUpdate(bookId, req.body, {
+      returnDocument: "after",
+    });
+
+    // If book was not found
+    if (!book) {
+      return res
+        .status(404)
+        .json({ status: httpStatus.FAIL, message: "Book not found" });
+    }
+
+    return res.status(200).json({ status: httpStatus.SUCCESS, data: { book } });
+  } catch (err) {
+    console.log(err.message);
+    return res
+      .status(500)
+      .json({ status: httpStatus.ERROR, message: err.message });
+  }
+});
+
 // Route to save a new book
 app.post("/books", async (req, res) => {
   try {
