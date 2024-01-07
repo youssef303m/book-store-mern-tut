@@ -11,7 +11,24 @@ const PORT = process.env.PORT;
 // Middleware for parsing request body
 app.use(express.json());
 
-app.get("/", (req, res) => {});
+// Get all books from database
+app.get("/books", async (req, res) => {
+  try {
+    const books = await Book.find({}, { __v: false });
+    return res
+      .status(200)
+      .json({
+        status: httpStatus.SUCCESS,
+        count: books.length,
+        data: { books },
+      });
+  } catch (err) {
+    console.log(err.message);
+    return res
+      .status(500)
+      .json({ status: httpStatus.ERROR, message: err.message });
+  }
+});
 
 // Route to save a new book
 app.post("/books", async (req, res) => {
@@ -34,10 +51,12 @@ app.post("/books", async (req, res) => {
 
     const book = await Book.create(newBook);
 
-    return res.status(201).json({ status: httpStatus.SUCCESS, book });
+    return res.status(201).json({ status: httpStatus.SUCCESS, data: { book } });
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({ status: httpStatus.ERROR, message: err.message });
+    return res
+      .status(500)
+      .json({ status: httpStatus.ERROR, message: err.message });
   }
 });
 
