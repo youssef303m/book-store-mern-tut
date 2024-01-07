@@ -15,13 +15,25 @@ app.use(express.json());
 app.get("/books", async (req, res) => {
   try {
     const books = await Book.find({}, { __v: false });
+    return res.status(200).json({
+      status: httpStatus.SUCCESS,
+      count: books.length,
+      data: { books },
+    });
+  } catch (err) {
+    console.log(err.message);
     return res
-      .status(200)
-      .json({
-        status: httpStatus.SUCCESS,
-        count: books.length,
-        data: { books },
-      });
+      .status(500)
+      .json({ status: httpStatus.ERROR, message: err.message });
+  }
+});
+
+// Get one book
+app.get("/books/:bookId", async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const book = await Book.findById(bookId, { __v: false });
+    return res.status(200).json({ status: httpStatus.SUCCESS, data: { book } });
   } catch (err) {
     console.log(err.message);
     return res
