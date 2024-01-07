@@ -10,13 +10,15 @@ const PORT = process.env.PORT;
 
 // CORS Middleware
 // Allow all origins
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
+app.use(cors());
+// Allow Custom Origins
+// app.use(
+//   cors({
+//     origin: "http://localhost:3000",
+//     methods: ["GET", "POST", "PATCH", "DELETE"],
+//     allowedHeaders: ["Content-Type"],
+//   })
+// );
 
 // Middleware for parsing request body
 app.use(express.json());
