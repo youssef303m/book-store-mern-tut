@@ -21,7 +21,6 @@ app.get("/books", async (req, res) => {
       data: { books },
     });
   } catch (err) {
-    console.log(err.message);
     return res
       .status(500)
       .json({ status: httpStatus.ERROR, message: err.message });
@@ -35,7 +34,6 @@ app.get("/books/:bookId", async (req, res) => {
     const book = await Book.findById(bookId, { __v: false });
     return res.status(200).json({ status: httpStatus.SUCCESS, data: { book } });
   } catch (err) {
-    console.log(err.message);
     return res
       .status(500)
       .json({ status: httpStatus.ERROR, message: err.message });
@@ -69,7 +67,26 @@ app.patch("/books/:bookId", async (req, res) => {
 
     return res.status(200).json({ status: httpStatus.SUCCESS, data: { book } });
   } catch (err) {
-    console.log(err.message);
+    return res
+      .status(500)
+      .json({ status: httpStatus.ERROR, message: err.message });
+  }
+});
+
+// Delete a book
+app.delete("/books/:bookId", async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const deletedBook = await Book.findByIdAndDelete(bookId);
+
+    if (!deletedBook) {
+      return res
+        .status(404)
+        .json({ status: httpStatus.FAIL, message: "Book not found" });
+    }
+
+    return res.status(200).json({ status: httpStatus.SUCCESS, data: null });
+  } catch (err) {
     return res
       .status(500)
       .json({ status: httpStatus.ERROR, message: err.message });
@@ -99,7 +116,6 @@ app.post("/books", async (req, res) => {
 
     return res.status(201).json({ status: httpStatus.SUCCESS, data: { book } });
   } catch (err) {
-    console.log(err.message);
     return res
       .status(500)
       .json({ status: httpStatus.ERROR, message: err.message });
